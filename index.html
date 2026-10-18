@@ -19,7 +19,7 @@
       --search-bg: rgba(15, 23, 42, 0.6);
       --search-border: rgba(56, 189, 248, 0.3);
       
-      --logo-filter: brightness(0) invert(1); /* Inalis ang drop-shadow para mabilis */
+      --logo-filter: brightness(0) invert(1);
       --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
       
       --topbar-bg: rgba(15, 23, 42, 0.6);
@@ -210,10 +210,9 @@
       -webkit-tap-highlight-color: transparent;
       position: relative; 
       box-shadow: var(--card-shadow);
-      transform: translateZ(0); /* Force GPU */
+      transform: translateZ(0);
     }
 
-    /* Glow Effect (Pseudo-element for 120fps) */
     .card::before {
       content: '';
       position: absolute;
@@ -233,7 +232,6 @@
       100% { opacity: 0; }
     }
 
-    /* CSS staggered animation (No JavaScript needed) */
     .card:nth-child(1)::before { animation: pulseGlow 3.5s infinite 0.0s; }
     .card:nth-child(2)::before { animation: pulseGlow 3.5s infinite 0.3s; }
     .card:nth-child(3)::before { animation: pulseGlow 3.5s infinite 0.6s; }
@@ -289,13 +287,12 @@
 
     /* Responsive at Mobile Optimization */
     @media (max-width: 768px) {
-      /* I-disable ang backdrop-filter sa mobile para hindi mag-lag */
       .card, .search, .weather-widget {
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
       }
       .aurora-1, .aurora-2, .aurora-3, .blob-1, .blob-2, .blob-3 {
-        filter: blur(40px); /* Bawasan ang blur radius */
+        filter: blur(40px); 
       }
     }
 
@@ -336,10 +333,12 @@
       <div class="logo-icon">I</div>
       <div class="logo-text">IMACHUI<br><span>AI LAUNCHER</span></div>
     </div>
+    
+    <!-- LIVE CLOCK DITO -->
     <div class="weather-widget">
       <div class="weather-info">
-        <span class="time">10:28 AM</span>
-        <span class="date">Oct 17, 2026</span>
+        <span class="time" id="liveTime">--:-- --</span>
+        <span class="date" id="liveDate">-- --, ----</span>
       </div>
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
@@ -456,7 +455,39 @@
   </div>
 
   <script>
-    // Search functionality na lang ang natira (wala nang mabigat na JS animations)
+    // --- LIVE CLOCK PARA SA PHILIPPINE TIME ---
+    function updateClock() {
+      const now = new Date();
+      
+      // Format para sa Oras (halimbawa: 2:48 PM)
+      const timeOptions = { 
+        timeZone: 'Asia/Manila', 
+        hour: 'numeric', 
+        minute: '2-digit', 
+        hour12: true 
+      };
+      const timeString = now.toLocaleTimeString('en-US', timeOptions);
+      
+      // Format para sa Petsa (halimbawa: Oct 18, 2026)
+      const dateOptions = { 
+        timeZone: 'Asia/Manila', 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric' 
+      };
+      const dateString = now.toLocaleDateString('en-US', dateOptions);
+      
+      // I-update ang HTML
+      document.getElementById('liveTime').textContent = timeString;
+      document.getElementById('liveDate').textContent = dateString;
+    }
+
+    // Patakbuhin agad pag-load, tapos i-update kada segundo
+    updateClock();
+    setInterval(updateClock, 1000);
+
+
+    // --- SEARCH FUNCTIONALITY ---
     document.getElementById('searchInput').addEventListener('input', function(e) {
       const searchTerm = e.target.value.toLowerCase();
       const cards = document.querySelectorAll('.card');
